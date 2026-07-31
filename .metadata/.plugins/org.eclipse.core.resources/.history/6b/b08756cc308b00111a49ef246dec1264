@@ -1,0 +1,192 @@
+package com.ticketing.service;
+
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+
+import org.springframework.stereotype.Service;
+
+
+import com.ticketing.dto.request.AccommodationRequest;
+import com.ticketing.dto.request.AccommodationSearchRequest;
+import com.ticketing.dto.response.AccommodationResponse;
+import com.ticketing.entity.Accommodation;
+import com.ticketing.repository.AccommodationRepository;
+import com.ticketing.specification.AccommodationSpecification;
+
+
+
+@Service
+public class AccommodationService {
+
+
+    private final AccommodationRepository accommodationRepository;
+
+
+
+    public AccommodationService(
+            AccommodationRepository accommodationRepository
+    ) {
+
+        this.accommodationRepository = accommodationRepository;
+    }
+
+
+
+
+
+
+    public void createAccommodation(
+            AccommodationRequest request
+    ) {
+
+
+        Accommodation accommodation =
+                new Accommodation();
+
+
+
+        accommodation.setName(
+                request.getName()
+        );
+
+
+        accommodation.setType(
+                request.getType()
+        );
+
+
+        accommodation.setCity(
+                request.getCity()
+        );
+
+
+        accommodation.setAddress(
+                request.getAddress()
+        );
+
+
+        accommodation.setDescription(
+                request.getDescription()
+        );
+
+
+        accommodation.setRating(
+                request.getRating()
+        );
+
+
+        accommodation.setPricePerNight(
+                request.getPricePerNight()
+        );
+
+
+        accommodation.setAvailableRooms(
+                request.getAvailableRooms()
+        );
+
+
+
+        accommodationRepository.save(
+                accommodation
+        );
+    }
+
+
+
+
+
+
+
+    public List<AccommodationResponse> getAllAccommodation() {
+
+
+        return accommodationRepository.findAll()
+                .stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+
+
+
+
+
+
+    public AccommodationResponse getAccommodationById(
+            Long id
+    ) {
+
+
+        Accommodation accommodation =
+                accommodationRepository.findById(id)
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Accommodation not found"
+                        )
+                );
+
+
+
+        return convertToResponse(
+                accommodation
+        );
+    }
+
+
+
+
+
+
+
+    public List<AccommodationResponse> searchAccommodation(
+            AccommodationSearchRequest request
+    ) {
+
+
+        return accommodationRepository
+                .findAll(
+                        AccommodationSpecification.filter(
+                                request
+                        )
+                )
+                .stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+
+
+
+
+
+
+    private AccommodationResponse convertToResponse(
+            Accommodation accommodation
+    ) {
+
+
+        return new AccommodationResponse(
+
+                accommodation.getId(),
+
+                accommodation.getName(),
+
+                accommodation.getType(),
+
+                accommodation.getCity(),
+
+                accommodation.getAddress(),
+
+                accommodation.getDescription(),
+
+                accommodation.getRating(),
+
+                accommodation.getPricePerNight(),
+
+                accommodation.getAvailableRooms()
+        );
+    }
+
+}

@@ -1,0 +1,38 @@
+public AccommodationBookingResponse getBookingById(
+        Long id
+) {
+
+
+    AccommodationBooking booking =
+            accommodationBookingRepository.findById(id)
+            .orElseThrow(
+                    () -> new RuntimeException(
+                            "Accommodation booking not found"
+                    )
+            );
+
+
+
+    if(userContext.getUserId() == null) {
+
+        throw new RuntimeException(
+                "User is not authenticated"
+        );
+    }
+
+
+
+    if(!booking.getUser()
+            .getId()
+            .equals(userContext.getUserId())) {
+
+
+        throw new RuntimeException(
+                "You cannot access this booking"
+        );
+    }
+
+
+
+    return convert(booking);
+}

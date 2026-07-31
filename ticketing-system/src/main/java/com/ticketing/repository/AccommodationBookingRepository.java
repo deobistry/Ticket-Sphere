@@ -1,0 +1,24 @@
+package com.ticketing.repository;
+
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ticketing.entity.AccommodationBooking;
+
+
+public interface AccommodationBookingRepository 
+extends JpaRepository<AccommodationBooking,Long>{
+
+
+
+    List<AccommodationBooking> findByUserId(Long id);
+
+
+
+    long countBy();
+
+
+
+}

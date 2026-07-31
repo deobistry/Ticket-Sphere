@@ -1,0 +1,179 @@
+package com.ticketing.service;
+
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+
+import org.springframework.stereotype.Service;
+
+
+import com.ticketing.dto.request.PaymentRequest;
+import com.ticketing.dto.response.PaymentResponse;
+import com.ticketing.entity.Payment;
+import com.ticketing.enums.PaymentMethod;
+import com.ticketing.enums.PaymentStatus;
+import com.ticketing.repository.PaymentRepository;
+
+
+
+@Service
+public class PaymentService {
+
+
+
+    private final PaymentRepository paymentRepository;
+
+
+
+
+    public PaymentService(
+            PaymentRepository paymentRepository
+    ) {
+
+        this.paymentRepository = paymentRepository;
+    }
+
+
+
+
+
+
+    public PaymentResponse makePayment(
+            PaymentRequest request
+    ) {
+
+
+
+        if(request.getBookingId() == null) {
+
+            throw new RuntimeException(
+                    "Booking id required"
+            );
+        }
+
+
+
+        if(request.getAmount() == null) {
+
+            throw new RuntimeException(
+                    "Amount required"
+            );
+        }
+
+
+
+
+
+        Payment payment = new Payment();
+
+
+
+        payment.setBookingId(
+                request.getBookingId()
+        );
+
+
+
+        payment.setBookingType(
+                request.getBookingType()
+        );
+
+
+
+        payment.setAmount(
+                request.getAmount()
+        );
+
+
+
+        payment.setPaymentMethod(
+                PaymentMethod.valueOf(
+                        request.getPaymentMethod()
+                                .toUpperCase()
+                )
+        );
+
+
+
+        payment.setPaymentStatus(
+                PaymentStatus.SUCCESS
+        );
+
+
+
+        payment.setTransactionId(
+                "TXN-" + UUID.randomUUID()
+        );
+
+
+
+        payment.setPaymentDate(
+                LocalDateTime.now()
+        );
+
+
+
+
+        paymentRepository.save(payment);
+
+
+
+        return convert(payment);
+    }
+
+
+
+
+
+
+
+    public List<PaymentResponse> getPayments(
+            Long bookingId
+    ) {
+
+
+        return paymentRepository
+                .findByBookingId(bookingId)
+                .stream()
+                .map(this::convert)
+                .collect(Collectors.toList());
+
+    }
+
+
+
+
+
+
+
+
+    private PaymentResponse convert(
+            Payment payment
+    ) {
+
+
+        return new PaymentResponse(
+
+                payment.getId(),
+
+                payment.getBookingId(),
+
+                payment.getBookingType(),
+
+                payment.getAmount(),
+
+                payment.getPaymentMethod()
+                        .name(),
+
+                payment.getPaymentStatus(),
+
+                payment.getTransactionId(),
+
+                payment.getPaymentDate()
+        );
+    }
+
+}

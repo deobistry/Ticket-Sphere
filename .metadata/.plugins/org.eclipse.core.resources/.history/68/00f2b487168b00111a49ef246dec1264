@@ -1,0 +1,28 @@
+package com.ticketing.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ticketing.entity.Transportation;
+
+public interface TransportationRepository 
+        extends JpaRepository<Transportation, Long> {
+
+
+    List<Transportation> findBySource(
+            String source
+    );
+
+
+    List<Transportation> findByDestination(
+            String destination
+    );
+
+
+    List<Transportation> findBySourceAndDestination(
+            String source,
+            String destination
+    );
+
+}

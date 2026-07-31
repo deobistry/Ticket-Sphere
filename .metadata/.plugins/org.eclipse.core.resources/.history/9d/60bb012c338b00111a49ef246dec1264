@@ -1,0 +1,174 @@
+package com.ticketing.service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ticketing.dto.request.TransportationRequest;
+import com.ticketing.dto.response.TransportationResponse;
+import com.ticketing.entity.Transportation;
+import com.ticketing.exception.ResourceNotFoundException;
+import com.ticketing.repository.TransportationRepository;
+
+@Service
+public class TransportationService {
+
+    private final TransportationRepository transportationRepository;
+
+    public TransportationService(
+            TransportationRepository transportationRepository
+    ) {
+
+        this.transportationRepository = transportationRepository;
+
+    }
+
+    @Transactional
+    public void createTransportation(
+            TransportationRequest request
+    ) {
+
+        if (request.getTransportNumber() == null
+                || request.getTransportNumber().isBlank()) {
+
+            throw new RuntimeException(
+                    "Transport number is required"
+            );
+
+        }
+
+        Transportation transportation =
+                new Transportation();
+
+        transportation.setTransportNumber(
+                request.getTransportNumber()
+        );
+
+        transportation.setType(
+                request.getType()
+        );
+
+        transportation.setOperatorName(
+                request.getOperatorName()
+        );
+
+        transportation.setSource(
+                request.getSource()
+        );
+
+        transportation.setDestination(
+                request.getDestination()
+        );
+
+        transportation.setDepartureTime(
+                request.getDepartureTime()
+        );
+
+        transportation.setArrivalTime(
+                request.getArrivalTime()
+        );
+
+        transportation.setDuration(
+                request.getDuration()
+        );
+
+        transportation.setTotalSeats(
+                request.getTotalSeats()
+        );
+
+        transportation.setAvailableSeats(
+                request.getAvailableSeats()
+        );
+
+        transportation.setPrice(
+                request.getPrice()
+        );
+
+        transportationRepository.save(
+                transportation
+        );
+
+    }
+
+    public List<TransportationResponse> getAllTransportation() {
+
+        return transportationRepository
+                .findAll()
+                .stream()
+                .map(this::convert)
+                .collect(Collectors.toList());
+
+    }
+
+    public TransportationResponse getTransportationById(
+            Long id
+    ) {
+
+        Transportation transportation =
+                transportationRepository
+                        .findById(id)
+                        .orElseThrow(
+                                () -> new ResourceNotFoundException(
+                                        "Transportation not found"
+                                )
+                        );
+
+        return convert(
+                transportation
+        );
+
+    }
+
+    public List<TransportationResponse> searchTransportation(
+            String source,
+            String destination
+    ) {
+
+        return transportationRepository
+                .searchTransportation(
+                        source,
+                        destination
+                )
+                .stream()
+                .map(this::convert)
+                .collect(Collectors.toList());
+
+    }
+
+    private TransportationResponse convert(
+            Transportation transportation
+    ) {
+
+        return new TransportationResponse(
+
+                transportation.getId(),
+
+                transportation.getTransportNumber(),
+
+                transportation.getType(),
+
+                transportation.getOperatorName(),
+
+                transportation.getSource(),
+
+                transportation.getDestination(),
+
+                transportation.getDepartureTime(),
+
+                transportation.getArrivalTime(),
+
+                transportation.getDuration(),
+
+                transportation.getTotalSeats(),
+
+                transportation.getAvailableSeats(),
+
+                transportation.getPrice()
+
+        );
+
+    }
+
+}

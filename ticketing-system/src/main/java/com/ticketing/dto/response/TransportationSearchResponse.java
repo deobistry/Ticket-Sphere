@@ -1,0 +1,187 @@
+package com.ticketing.dto.response;
+
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+
+import com.ticketing.enums.TransportType;
+
+
+
+public class TransportationSearchResponse {
+
+
+    private Long id;
+
+
+    private String name;
+
+
+    private TransportType type;
+
+
+    private String source;
+
+
+    private String destination;
+
+
+    private LocalDate travelDate;
+
+
+    private LocalTime departureTime;
+
+
+    private LocalTime arrivalTime;
+
+
+    private BigDecimal price;
+
+
+    private Integer availableSeats;
+
+
+
+
+
+    public TransportationSearchResponse() {
+
+    }
+
+
+
+
+
+    public TransportationSearchResponse(
+            Long id,
+            String name,
+            TransportType type,
+            String source,
+            String destination,
+            LocalDate travelDate,
+            LocalTime departureTime,
+            LocalTime arrivalTime,
+            BigDecimal price,
+            Integer availableSeats
+    ) {
+
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.source = source;
+        this.destination = destination;
+        this.travelDate = travelDate;
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+        this.price = price;
+        this.availableSeats = availableSeats;
+
+    }
+
+
+
+
+
+    public Long getId() {
+        return id;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+
+    public TransportType getType() {
+        return type;
+    }
+
+
+    public String getSource() {
+        return source;
+    }
+
+
+    public String getDestination() {
+        return destination;
+    }
+
+
+    public LocalDate getTravelDate() {
+        return travelDate;
+    }
+
+
+    public LocalTime getDepartureTime() {
+        return departureTime;
+    }
+
+
+    public LocalTime getArrivalTime() {
+        return arrivalTime;
+    }
+
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+
+    public Integer getAvailableSeats() {
+        return availableSeats;
+    }
+
+
+
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    public void setType(TransportType type) {
+        this.type = type;
+    }
+
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+
+    public void setTravelDate(LocalDate travelDate) {
+        this.travelDate = travelDate;
+    }
+
+
+    public void setDepartureTime(LocalTime departureTime) {
+        this.departureTime = departureTime;
+    }
+
+
+    public void setArrivalTime(LocalTime arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+
+    public void setAvailableSeats(Integer availableSeats) {
+        this.availableSeats = availableSeats;
+    }
+}

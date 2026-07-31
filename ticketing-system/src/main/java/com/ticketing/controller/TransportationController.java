@@ -1,0 +1,119 @@
+package com.ticketing.controller;
+
+
+import java.util.List;
+
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+
+import com.ticketing.dto.request.TransportationRequest;
+import com.ticketing.dto.request.TransportationSearchRequest;
+import com.ticketing.dto.response.TransportationResponse;
+import com.ticketing.service.TransportationService;
+
+
+
+@RestController
+@RequestMapping("/transportation")
+public class TransportationController {
+
+
+    private final TransportationService transportationService;
+
+
+
+    public TransportationController(
+            TransportationService transportationService
+    ) {
+
+        this.transportationService = transportationService;
+    }
+
+
+
+
+
+
+    @PostMapping
+    public ResponseEntity<String> createTransportation(
+            @RequestBody TransportationRequest request
+    ) {
+
+
+        transportationService.createTransportation(
+                request
+        );
+
+
+        return ResponseEntity.ok(
+                "Transportation created successfully"
+        );
+    }
+
+
+
+
+
+
+
+    @GetMapping
+    public ResponseEntity<List<TransportationResponse>> getAllTransportation() {
+
+
+        return ResponseEntity.ok(
+                transportationService.getAllTransportation()
+        );
+    }
+
+
+
+
+
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TransportationResponse> getById(
+            @PathVariable Long id
+    ) {
+
+
+        return ResponseEntity.ok(
+                transportationService.getTransportationById(id)
+        );
+    }
+
+
+
+
+
+
+
+    @GetMapping("/search")
+    public ResponseEntity<List<TransportationResponse>> search(
+            @ModelAttribute TransportationSearchRequest request
+    ) {
+
+
+        return ResponseEntity.ok(
+                transportationService.searchTransportation(
+                        request
+                )
+        );
+
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTransportation(
+            @PathVariable Long id
+    ) {
+
+        transportationService.deleteTransportation(id);
+
+        return ResponseEntity.ok(
+                "Transportation deleted successfully"
+        );
+    }
+
+}

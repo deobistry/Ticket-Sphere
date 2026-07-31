@@ -1,0 +1,188 @@
+package com.ticketing.entity;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ticketing.enums.AccommodationType;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "accommodation")
+public class Accommodation {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccommodationType type;
+
+    @Column(nullable = false)
+    private String city;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    private Double rating;
+
+    @Column(nullable = false)
+    private BigDecimal pricePerNight;
+
+    @Column(nullable = false)
+    private Integer availableRooms;
+
+
+    @OneToMany(
+            mappedBy = "accommodation",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonManagedReference
+    private List<AccommodationBooking> bookings = new ArrayList<>();
+
+
+    public Accommodation() {
+    }
+
+
+    public Accommodation(
+            Long id,
+            String name,
+            AccommodationType type,
+            String city,
+            String address,
+            String description,
+            Double rating,
+            BigDecimal pricePerNight,
+            Integer availableRooms
+    ) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.city = city;
+        this.address = address;
+        this.description = description;
+        this.rating = rating;
+        this.pricePerNight = pricePerNight;
+        this.availableRooms = availableRooms;
+    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    public AccommodationType getType() {
+        return type;
+    }
+
+
+    public void setType(AccommodationType type) {
+        this.type = type;
+    }
+
+
+    public String getCity() {
+        return city;
+    }
+
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+
+    public String getAddress() {
+        return address;
+    }
+
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+
+    public Double getRating() {
+        return rating;
+    }
+
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
+
+    public BigDecimal getPricePerNight() {
+        return pricePerNight;
+    }
+
+
+    public void setPricePerNight(BigDecimal pricePerNight) {
+        this.pricePerNight = pricePerNight;
+    }
+
+
+    public Integer getAvailableRooms() {
+        return availableRooms;
+    }
+
+
+    public void setAvailableRooms(Integer availableRooms) {
+        this.availableRooms = availableRooms;
+    }
+
+
+    public List<AccommodationBooking> getBookings() {
+        return bookings;
+    }
+
+
+    public void setBookings(List<AccommodationBooking> bookings) {
+        this.bookings = bookings;
+    }
+}

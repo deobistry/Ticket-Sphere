@@ -1,0 +1,143 @@
+package com.ticketing.entity;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import com.ticketing.enums.BookingStatus;
+
+import jakarta.persistence.*;
+
+@Entity
+public class AccommodationBooking {
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
+    @ManyToOne
+    @JoinColumn(name = "accommodation_id")
+    private Accommodation accommodation;
+
+
+    private Integer roomsBooked;
+
+
+    private LocalDate checkInDate;
+
+
+    private LocalDate checkOutDate;
+
+
+    private BigDecimal totalAmount;
+
+
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
+
+
+    private LocalDateTime bookingDate;
+
+
+
+    public AccommodationBooking() {
+    }
+
+
+
+    public Long getId() {
+        return id;
+    }
+
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
+    public User getUser() {
+        return user;
+    }
+
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+
+    public Accommodation getAccommodation() {
+        return accommodation;
+    }
+
+
+    public void setAccommodation(Accommodation accommodation) {
+        this.accommodation = accommodation;
+    }
+
+
+    public Integer getRoomsBooked() {
+        return roomsBooked;
+    }
+
+
+    public void setRoomsBooked(Integer roomsBooked) {
+        this.roomsBooked = roomsBooked;
+    }
+
+
+    public LocalDate getCheckInDate() {
+        return checkInDate;
+    }
+
+
+    public void setCheckInDate(LocalDate checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+
+    public LocalDate getCheckOutDate() {
+        return checkOutDate;
+    }
+
+
+    public void setCheckOutDate(LocalDate checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
+
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+
+    public BookingStatus getStatus() {
+        return status;
+    }
+
+
+    public void setStatus(BookingStatus status) {
+        this.status = status;
+    }
+
+
+    public LocalDateTime getBookingDate() {
+        return bookingDate;
+    }
+
+
+    public void setBookingDate(LocalDateTime bookingDate) {
+        this.bookingDate = bookingDate;
+    }
+}
