@@ -1,0 +1,5 @@
+package com.ticketing.dto.response;
+
+public class AdminBookingResponse {
+
+}

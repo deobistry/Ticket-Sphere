@@ -1,0 +1,183 @@
+package com.ticketing.security;
+
+
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+
+import org.springframework.stereotype.Component;
+
+
+import com.ticketing.entity.User;
+
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+
+
+
+@Component
+public class JwtUtil {
+
+
+
+    private final String SECRET =
+            "myverysecretkeymyverysecretkeymyverysecretkey12345";
+
+
+
+    private final SecretKey key =
+            Keys.hmacShaKeyFor(
+                    SECRET.getBytes()
+            );
+
+
+
+
+
+
+
+    public String generateToken(
+            User user
+    ) {
+
+
+
+        return Jwts.builder()
+
+                .subject(
+                        user.getEmail()
+                )
+
+                .claim(
+                        "userId",
+                        user.getId()
+                )
+
+                .claim(
+                        "role",
+                        user.getRole()
+                                .name()
+                )
+
+                .issuedAt(
+                        new Date()
+                )
+
+                .expiration(
+                        new Date(
+                                System.currentTimeMillis()
+                                +
+                                1000 * 60 * 60 * 24
+                        )
+                )
+
+                .signWith(
+                        key,
+                        Jwts.SIG.HS256
+                )
+
+                .compact();
+
+    }
+
+
+
+
+
+
+
+    public Claims extractClaims(
+            String token
+    ) {
+
+
+        return Jwts.parser()
+
+                .verifyWith(key)
+
+                .build()
+
+                .parseSignedClaims(token)
+
+                .getPayload();
+
+    }
+
+
+
+
+
+
+
+    public String extractEmail(
+            String token
+    ) {
+
+
+        return extractClaims(token)
+                .getSubject();
+
+    }
+
+
+
+
+
+
+
+    public Long extractUserId(
+            String token
+    ) {
+
+
+        return extractClaims(token)
+                .get("userId", Long.class);
+
+    }
+
+
+
+
+
+
+
+    public String extractRole(
+            String token
+    ) {
+
+
+        return extractClaims(token)
+                .get("role", String.class);
+
+    }
+
+
+
+
+
+
+
+    public boolean validateToken(
+            String token
+    ) {
+
+
+        try {
+
+            extractClaims(token);
+
+            return true;
+
+
+        } catch(Exception e) {
+
+            return false;
+
+        }
+
+    }
+
+}

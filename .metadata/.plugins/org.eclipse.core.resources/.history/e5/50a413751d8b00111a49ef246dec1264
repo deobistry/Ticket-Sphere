@@ -1,0 +1,25 @@
+package com.ticketing.repository;
+
+
+import java.util.List;
+
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+
+import com.ticketing.entity.AccommodationBooking;
+
+
+
+@Repository
+public interface AccommodationBookingRepository 
+        extends JpaRepository<AccommodationBooking, Long> {
+
+
+    List<AccommodationBooking> findByUserId(Long userId);
+
+
+    List<AccommodationBooking> findByAccommodationId(Long accommodationId);
+
+}

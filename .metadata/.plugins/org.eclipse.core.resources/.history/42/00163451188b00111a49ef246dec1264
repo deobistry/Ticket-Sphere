@@ -1,0 +1,5 @@
+package com.ticketing.specification;
+
+public class TransportationSpecification {
+
+}

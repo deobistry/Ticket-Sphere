@@ -1,0 +1,50 @@
+import {
+    BrowserRouter
+} from "react-router-dom";
+
+
+import AppRoutes from "./routes/AppRoutes";
+
+
+import {
+    AuthProvider
+} from "./context/AuthContext";
+
+
+
+function App(){
+
+
+return (
+
+<BrowserRouter>
+
+
+<AuthProvider>
+
+
+<div
+className="
+min-h-screen
+"
+>
+
+
+<AppRoutes/>
+
+
+</div>
+
+
+</AuthProvider>
+
+
+</BrowserRouter>
+
+);
+
+
+}
+
+
+export default App;

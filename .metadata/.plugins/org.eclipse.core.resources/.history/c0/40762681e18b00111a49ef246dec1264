@@ -1,0 +1,5 @@
+package com.ticketing.controller.admin;
+
+public class AdminBookingController {
+
+}

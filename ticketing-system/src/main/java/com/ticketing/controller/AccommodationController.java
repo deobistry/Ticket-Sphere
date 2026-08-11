@@ -1,0 +1,141 @@
+package com.ticketing.controller;
+
+
+import java.util.List;
+
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+
+import com.ticketing.dto.request.AccommodationRequest;
+import com.ticketing.dto.request.AccommodationSearchRequest;
+import com.ticketing.dto.response.AccommodationResponse;
+import com.ticketing.service.AccommodationService;
+
+
+
+@RestController
+@RequestMapping("/accommodation")
+public class AccommodationController {
+
+
+
+    private final AccommodationService accommodationService;
+
+
+
+    public AccommodationController(
+            AccommodationService accommodationService
+    ) {
+
+        this.accommodationService = accommodationService;
+    }
+
+
+
+
+
+
+
+
+    @PostMapping
+    public ResponseEntity<String> createAccommodation(
+            @RequestBody AccommodationRequest request
+    ) {
+
+
+        accommodationService.createAccommodation(
+                request
+        );
+
+
+        return ResponseEntity.ok(
+                "Accommodation created successfully"
+        );
+    }
+
+
+
+
+
+
+
+
+
+    @GetMapping
+    public ResponseEntity<List<AccommodationResponse>> getAll() {
+
+
+        return ResponseEntity.ok(
+                accommodationService.getAllAccommodation()
+        );
+    }
+
+
+
+
+
+
+
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AccommodationResponse> getById(
+            @PathVariable Long id
+    ) {
+
+
+        return ResponseEntity.ok(
+                accommodationService.getAccommodationById(id)
+        );
+    }
+
+
+
+
+
+
+
+
+
+    @GetMapping("/search")
+    public ResponseEntity<List<AccommodationResponse>> search(
+            @ModelAttribute AccommodationSearchRequest request
+    ) {
+
+
+        return ResponseEntity.ok(
+                accommodationService.searchAccommodation(
+                        request
+                )
+        );
+
+    }
+
+
+
+
+
+
+
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteAccommodation(
+            @PathVariable Long id
+    ){
+
+        accommodationService.deleteAccommodation(
+                id
+        );
+
+
+        return ResponseEntity.ok(
+                "Accommodation deleted successfully"
+        );
+
+    }
+
+
+}

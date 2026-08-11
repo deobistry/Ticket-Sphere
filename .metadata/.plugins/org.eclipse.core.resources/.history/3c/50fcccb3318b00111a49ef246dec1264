@@ -1,0 +1,402 @@
+package com.ticketing.service;
+
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+import com.ticketing.dto.request.PaymentRequest;
+import com.ticketing.dto.response.PaymentResponse;
+import com.ticketing.entity.Payment;
+import com.ticketing.entity.User;
+import com.ticketing.enums.PaymentStatus;
+import com.ticketing.exception.ResourceNotFoundException;
+import com.ticketing.repository.PaymentRepository;
+import com.ticketing.repository.UserRepository;
+import com.ticketing.security.UserContext;
+
+
+
+@Service
+public class PaymentService {
+
+
+
+    private final PaymentRepository paymentRepository;
+
+
+    private final UserRepository userRepository;
+
+
+    private final UserContext userContext;
+
+
+
+
+
+
+
+    public PaymentService(
+            PaymentRepository paymentRepository,
+            UserRepository userRepository,
+            UserContext userContext
+    ) {
+
+        this.paymentRepository = paymentRepository;
+
+        this.userRepository = userRepository;
+
+        this.userContext = userContext;
+
+    }
+
+
+
+
+
+
+
+
+
+    @Transactional
+    public PaymentResponse makePayment(
+            PaymentRequest request
+    ) {
+
+
+
+        User user =
+                getLoggedUser();
+
+
+
+
+
+
+
+        if(request.getBookingId()==null) {
+
+
+            throw new RuntimeException(
+                    "Booking id is required"
+            );
+
+        }
+
+
+
+
+
+
+
+        if(request.getAmount()==null) {
+
+
+            throw new RuntimeException(
+                    "Amount is required"
+            );
+
+        }
+
+
+
+
+
+
+
+
+        Payment payment =
+                new Payment();
+
+
+
+
+
+        payment.setUser(
+                user
+        );
+
+
+
+        payment.setBookingId(
+                request.getBookingId()
+        );
+
+
+
+        payment.setAmount(
+                request.getAmount()
+        );
+
+
+
+        payment.setPaymentMethod(
+                request.getPaymentMethod()
+        );
+
+
+
+        payment.setPaymentStatus(
+                PaymentStatus.SUCCESS
+        );
+
+
+
+        payment.setPaymentDate(
+                LocalDateTime.now()
+        );
+
+
+
+
+
+
+        Payment savedPayment =
+                paymentRepository.save(
+                        payment
+                );
+
+
+
+
+
+        return convert(savedPayment);
+
+    }
+
+
+
+
+
+
+
+
+
+    public List<PaymentResponse> getMyPayments() {
+
+
+
+        User user =
+                getLoggedUser();
+
+
+
+
+
+
+        return paymentRepository
+                .findByUserId(
+                        user.getId()
+                )
+
+                .stream()
+
+                .map(this::convert)
+
+                .collect(Collectors.toList());
+
+    }
+
+
+
+
+
+
+
+
+
+    public PaymentResponse getPaymentById(
+            Long id
+    ) {
+
+
+
+        Payment payment =
+
+                paymentRepository.findById(
+                        id
+                )
+
+                .orElseThrow(
+
+                        () -> new ResourceNotFoundException(
+                                "Payment not found"
+                        )
+
+                );
+
+
+
+
+
+
+
+        if(!payment.getUser()
+                .getId()
+                .equals(
+                        userContext.getUserId()
+                )) {
+
+
+            throw new RuntimeException(
+                    "You cannot access this payment"
+            );
+
+        }
+
+
+
+
+
+
+
+        return convert(payment);
+
+    }
+
+
+
+
+
+
+
+
+
+    @Transactional
+    public void cancelPayment(
+            Long id
+    ) {
+
+
+
+        Payment payment =
+
+                paymentRepository.findById(
+                        id
+                )
+
+                .orElseThrow(
+
+                        () -> new ResourceNotFoundException(
+                                "Payment not found"
+                        )
+
+                );
+
+
+
+
+
+
+
+
+        if(!payment.getUser()
+                .getId()
+                .equals(
+                        userContext.getUserId()
+                )) {
+
+
+            throw new RuntimeException(
+                    "You cannot cancel this payment"
+            );
+
+        }
+
+
+
+
+
+
+
+        payment.setPaymentStatus(
+                PaymentStatus.FAILED
+        );
+
+
+
+        paymentRepository.save(
+                payment
+        );
+
+    }
+
+
+
+
+
+
+
+
+
+    private User getLoggedUser() {
+
+
+
+        if(userContext.getUserId()==null) {
+
+
+            throw new RuntimeException(
+                    "User not authenticated"
+            );
+
+        }
+
+
+
+
+
+
+        return userRepository.findById(
+                userContext.getUserId()
+        )
+
+        .orElseThrow(
+
+                () -> new ResourceNotFoundException(
+                        "User not found"
+                )
+
+        );
+
+    }
+
+
+
+
+
+
+
+
+
+    private PaymentResponse convert(
+            Payment payment
+    ) {
+
+
+
+        return new PaymentResponse(
+
+                payment.getId(),
+
+                payment.getBookingId(),
+
+                payment.getAmount(),
+
+                payment.getPaymentMethod(),
+
+                payment.getPaymentStatus(),
+
+                payment.getPaymentDate()
+
+        );
+
+    }
+
+
+}

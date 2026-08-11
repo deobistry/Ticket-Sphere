@@ -1,0 +1,40 @@
+package com.ticketing.repository;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ticketing.entity.Accommodation;
+
+public interface AccommodationRepository 
+        extends JpaRepository<Accommodation, Long> {
+
+
+    List<Accommodation> findByCity(
+            String city
+    );
+
+
+    List<Accommodation> findByType(
+            String type
+    );
+
+
+    List<Accommodation> findByCityAndType(
+            String city,
+            String type
+    );
+
+
+    List<Accommodation> findByPricePerNightBetween(
+            BigDecimal minPrice,
+            BigDecimal maxPrice
+    );
+
+
+    List<Accommodation> findByRatingGreaterThanEqual(
+            Double rating
+    );
+
+}

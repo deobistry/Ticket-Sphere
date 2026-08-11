@@ -1,0 +1,5 @@
+package com.ticketing.service.admin;
+
+public class AdminUserService {
+
+}

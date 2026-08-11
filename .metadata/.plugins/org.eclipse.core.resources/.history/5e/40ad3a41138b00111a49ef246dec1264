@@ -1,0 +1,36 @@
+package com.ticketing.dto.request;
+
+public class TransportBookingRequest {
+
+
+    private Long transportationId;
+
+
+    private Integer seatsBooked;
+
+
+
+    public TransportBookingRequest() {
+    }
+
+
+
+    public Long getTransportationId() {
+        return transportationId;
+    }
+
+
+    public void setTransportationId(Long transportationId) {
+        this.transportationId = transportationId;
+    }
+
+
+    public Integer getSeatsBooked() {
+        return seatsBooked;
+    }
+
+
+    public void setSeatsBooked(Integer seatsBooked) {
+        this.seatsBooked = seatsBooked;
+    }
+}

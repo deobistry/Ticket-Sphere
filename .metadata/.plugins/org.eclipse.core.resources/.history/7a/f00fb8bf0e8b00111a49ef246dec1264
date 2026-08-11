@@ -1,0 +1,5 @@
+package com.ticketing.exception;
+
+public class ForbiddenException {
+
+}

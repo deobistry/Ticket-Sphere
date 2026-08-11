@@ -1,0 +1,14 @@
+package com.ticketing.enums;
+
+
+public enum PaymentStatus {
+
+    PAID,
+
+    PENDING,
+
+    FAILED,
+
+    REFUNDED, SUCCESS
+
+}

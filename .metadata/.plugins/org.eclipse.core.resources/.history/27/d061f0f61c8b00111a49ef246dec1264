@@ -1,0 +1,76 @@
+package com.ticketing.controller;
+
+
+import java.util.List;
+
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+
+import com.ticketing.dto.request.AccommodationBookingRequest;
+import com.ticketing.dto.response.AccommodationBookingResponse;
+import com.ticketing.service.AccommodationBookingService;
+
+
+
+@RestController
+@RequestMapping("/accommodation-bookings")
+public class AccommodationBookingController {
+
+
+
+    private final AccommodationBookingService accommodationBookingService;
+
+
+
+
+    public AccommodationBookingController(
+            AccommodationBookingService accommodationBookingService
+    ) {
+
+        this.accommodationBookingService = accommodationBookingService;
+    }
+
+
+
+
+
+
+
+    @PostMapping
+    public ResponseEntity<String> book(
+            @RequestBody AccommodationBookingRequest request
+    ) {
+
+
+
+        accommodationBookingService.bookAccommodation(
+                request
+        );
+
+
+
+        return ResponseEntity.ok(
+                "Accommodation booked successfully"
+        );
+    }
+
+
+
+
+
+
+
+
+    @GetMapping("/my")
+    public ResponseEntity<List<AccommodationBookingResponse>> myBookings() {
+
+
+
+        return ResponseEntity.ok(
+                accommodationBookingService.getMyBookings()
+        );
+    }
+
+}

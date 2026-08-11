@@ -1,0 +1,391 @@
+package com.ticketing.service;
+
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
+
+
+import org.springframework.stereotype.Service;
+
+
+import com.ticketing.dto.request.AccommodationBookingRequest;
+import com.ticketing.dto.response.AccommodationBookingResponse;
+import com.ticketing.entity.Accommodation;
+import com.ticketing.entity.AccommodationBooking;
+import com.ticketing.entity.User;
+import com.ticketing.enums.BookingStatus;
+import com.ticketing.repository.AccommodationBookingRepository;
+import com.ticketing.repository.AccommodationRepository;
+import com.ticketing.repository.UserRepository;
+import com.ticketing.security.UserContext;
+
+
+
+@Service
+public class AccommodationBookingService {
+
+
+
+    private final AccommodationBookingRepository accommodationBookingRepository;
+
+    private final AccommodationRepository accommodationRepository;
+
+    private final UserRepository userRepository;
+
+    private final UserContext userContext;
+
+
+
+
+    public AccommodationBookingService(
+            AccommodationBookingRepository accommodationBookingRepository,
+            AccommodationRepository accommodationRepository,
+            UserRepository userRepository,
+            UserContext userContext
+    ) {
+
+        this.accommodationBookingRepository =
+                accommodationBookingRepository;
+
+        this.accommodationRepository =
+                accommodationRepository;
+
+        this.userRepository =
+                userRepository;
+
+        this.userContext =
+                userContext;
+    }
+
+
+
+
+
+
+
+    public void bookAccommodation(
+            AccommodationBookingRequest request
+    ) {
+
+
+
+        if(request.getAccommodationId() == null) {
+
+            throw new RuntimeException(
+                    "Accommodation id is required"
+            );
+        }
+
+
+
+        if(request.getRoomsBooked() == null ||
+                request.getRoomsBooked() <= 0) {
+
+            throw new RuntimeException(
+                    "Rooms booked must be greater than zero"
+            );
+        }
+
+
+
+        if(request.getCheckInDate() == null ||
+                request.getCheckOutDate() == null) {
+
+            throw new RuntimeException(
+                    "Check-in and check-out dates are required"
+            );
+        }
+
+
+
+        if(userContext.getUserId() == null) {
+
+            throw new RuntimeException(
+                    "User is not authenticated"
+            );
+        }
+
+
+
+
+
+        User user =
+                userRepository.findById(
+                        userContext.getUserId()
+                )
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "User not found"
+                        )
+                );
+
+
+
+
+
+        Accommodation accommodation =
+                accommodationRepository.findById(
+                        request.getAccommodationId()
+                )
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Accommodation not found"
+                        )
+                );
+
+
+
+
+
+        if(accommodation.getAvailableRooms()
+                < request.getRoomsBooked()) {
+
+
+            throw new RuntimeException(
+                    "Not enough rooms available"
+            );
+        }
+
+
+
+
+
+        if(request.getCheckInDate()
+                .isAfter(request.getCheckOutDate())) {
+
+
+            throw new RuntimeException(
+                    "Invalid booking dates"
+            );
+        }
+
+
+
+
+
+        long nights =
+                ChronoUnit.DAYS.between(
+                        request.getCheckInDate(),
+                        request.getCheckOutDate()
+                );
+
+
+
+
+
+        if(nights <= 0) {
+
+            throw new RuntimeException(
+                    "Minimum stay should be one night"
+            );
+        }
+
+
+
+
+
+        BigDecimal totalAmount =
+                accommodation.getPricePerNight()
+                .multiply(
+                        BigDecimal.valueOf(nights)
+                )
+                .multiply(
+                        BigDecimal.valueOf(
+                                request.getRoomsBooked()
+                        )
+                );
+
+
+
+
+
+        accommodation.setAvailableRooms(
+                accommodation.getAvailableRooms()
+                -
+                request.getRoomsBooked()
+        );
+
+
+        accommodationRepository.save(
+                accommodation
+        );
+
+
+
+
+
+        AccommodationBooking booking =
+                new AccommodationBooking();
+
+
+
+        booking.setUser(user);
+
+
+        booking.setAccommodation(
+                accommodation
+        );
+
+
+        booking.setRoomsBooked(
+                request.getRoomsBooked()
+        );
+
+
+        booking.setCheckInDate(
+                request.getCheckInDate()
+        );
+
+
+        booking.setCheckOutDate(
+                request.getCheckOutDate()
+        );
+
+
+        booking.setTotalAmount(
+                totalAmount
+        );
+
+
+        booking.setStatus(
+                BookingStatus.CONFIRMED
+        );
+
+
+        booking.setBookingDate(
+                LocalDateTime.now()
+        );
+
+
+
+        accommodationBookingRepository.save(
+                booking
+        );
+
+    }
+
+
+
+
+
+
+
+    public List<AccommodationBookingResponse> getMyBookings() {
+
+
+        if(userContext.getUserId() == null) {
+
+            throw new RuntimeException(
+                    "User is not authenticated"
+            );
+        }
+
+
+
+        return accommodationBookingRepository
+                .findByUserId(
+                        userContext.getUserId()
+                )
+                .stream()
+                .map(this::convert)
+                .collect(Collectors.toList());
+
+    }
+
+
+
+
+
+
+
+    public AccommodationBookingResponse getBookingById(
+            Long id
+    ) {
+
+
+        AccommodationBooking booking =
+                accommodationBookingRepository.findById(id)
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Accommodation booking not found"
+                        )
+                );
+
+
+
+        checkOwnership(
+                booking.getUser()
+        );
+
+
+        return convert(booking);
+    }
+
+
+
+
+
+
+
+    private void checkOwnership(
+            User user
+    ) {
+
+
+        if(userContext.getUserId() == null) {
+
+            throw new RuntimeException(
+                    "User is not authenticated"
+            );
+        }
+
+
+
+        if(!user.getId()
+                .equals(userContext.getUserId())) {
+
+
+            throw new RuntimeException(
+                    "You cannot access this booking"
+            );
+        }
+
+    }
+
+
+
+
+
+
+
+    private AccommodationBookingResponse convert(
+            AccommodationBooking booking
+    ) {
+
+
+        return new AccommodationBookingResponse(
+
+                booking.getId(),
+
+                booking.getAccommodation().getId(),
+
+                booking.getAccommodation().getName(),
+
+                booking.getRoomsBooked(),
+
+                booking.getCheckInDate(),
+
+                booking.getCheckOutDate(),
+
+                booking.getTotalAmount(),
+
+                booking.getStatus(),
+
+                booking.getBookingDate()
+        );
+    }
+
+}

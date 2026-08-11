@@ -1,0 +1,5 @@
+package com.ticketing.dto.request;
+
+public class TransportationRequest {
+
+}

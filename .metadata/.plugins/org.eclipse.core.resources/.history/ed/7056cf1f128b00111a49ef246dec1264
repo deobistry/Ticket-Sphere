@@ -1,0 +1,9 @@
+package com.ticketing.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ticketing.entity.TransportBooking;
+
+public interface TransportBookingRepository extends JpaRepository<TransportBooking, Long> {
+
+}
